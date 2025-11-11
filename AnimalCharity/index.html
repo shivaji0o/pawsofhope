@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Paws of Hope</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ecf0f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #34495e;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #bdc3c7;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .login-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .footer-links {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .footer-links a {
+      color: #3498db;
+      text-decoration: none;
+      margin: 0 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #2c3e50;
+    }
+
+    #message.error {
+      color: #e74c3c;
+    }
+
+    #message.success {
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to Paws of Hope</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+    <p id="message"></p>
+    <div class="footer-links">
+      <a href="#">Forgot Password?</a>
+      <a href="#">Create Account</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const messageEl = document.getElementById("message");
+
+      messageEl.textContent = "Logging in...";
+      messageEl.className = "";
+
+      try {
+        const response = await fetch("http://localhost:5000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageEl.textContent = "✅ Login successful! Redirecting...";
+          messageEl.className = "success";
+
+          // Redirect after 1.5 seconds
+          setTimeout(() => {
+            window.location.href = "home.html";
+          }, 1500);
+        } else {
+          messageEl.textContent = "❌ " + result.message;
+          messageEl.className = "error";
+        }
+      } catch (error) {
+        messageEl.textContent = "⚠️ Could not connect to server. Is your backend running?";
+        messageEl.className = "error";
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
